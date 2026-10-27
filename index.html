@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barrera Inteligente - Teachable Machine & Arduino</title>
+
+  <!-- Librerías de Inteligencia Artificial (Versiones fijas especificadas) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+  <!-- Fuente Tipográfica Poppins (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       ESTILOS CSS - PALETA MODERNA GRAPHITE/INDIGO + TIPOGRAFÍA POPPINS
+       Bordes sutiles (sin líneas duras) y sombras suaves
+       ========================================================== */
+    :root {
+      /* Nueva paleta: Carbón profundo, Grafito suave e Índigo */
+      --bg-principal: #0f1115;       /* Fondo grafito muy oscuro */
+      --bg-tarjeta: #181b22;         /* Superficie de tarjeta limpia */
+      --bg-tarjeta-hover: #20242e;   /* Hover interactivo suave */
+      --bg-interior: #12141a;        /* Fondo para cajas internas e inputs */
+      --borde-sutil: rgba(255, 255, 255, 0.05); /* Borde difuminado, no marcado */
+      
+      --texto-principal: #f3f4f6;    /* Blanco suave de alto contraste */
+      --texto-secundario: #9ca3af;   /* Gris neutro legible */
+      --texto-mutado: #6b7280;       /* Texto atenuado */
+
+      --color-abierto: #10b981;      /* Esmeralda suave */
+      --color-cerrado: #f43f5e;      /* Rosa / Carmesí suave */
+      --color-primario: #6366f1;     /* Índigo moderno */
+      --color-primario-hover: #4f46e5;
+      --color-acento: #38bdf8;       /* Celeste cielo suave */
+      --color-alerta: #fbbf24;       /* Ámbar cálido */
+      --radio-borde: 14px;
+
+      /* Sombras suaves y difusas (no invasivas) */
+      --sombra-suave: 0 8px 24px -4px rgba(0, 0, 0, 0.28);
+      --sombra-sutil: 0 4px 14px rgba(0, 0, 0, 0.18);
+      --sombra-boton: 0 2px 10px rgba(99, 102, 241, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-principal);
+      color: var(--texto-principal);
+      line-height: 1.5;
+      padding: 1.25rem 1rem;
+      min-height: 100vh;
+    }
+
+    /* Enfoque visible accesible pero elegante */
+    button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--color-primario);
+      outline-offset: 2px;
+    }
+
+    .contenedor-app {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Encabezado */
+    header {
+      background: var(--bg-tarjeta);
+      border: 1px solid var(--borde-sutil);
+      border-radius: var(--radio-borde);
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: var(--sombra-sutil);
+    }
+
+    header h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--texto-principal);
+    }
+
+    .subtitulo {
+      font-size: 0.85rem;
+      color: var(--texto-secundario);
+      margin-top: 0.15rem;
+    }
+
+    .badges-header {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.8rem;
+      border-radius: 9999px;
+      background: var(--bg-interior);
+      border: 1px solid var(--borde-sutil);
+      color: var(--texto-secundario);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .badge.online {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .badge.offline {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fb7185;
+      border-color: rgba(244, 63, 94, 0.2);
+    }
+
+    /* Alerta de compatibilidad Web Serial */
+    .alerta-incompatible {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      color: #fda4af;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radio-borde);
+      font-size: 0.95rem;
+      box-shadow: var(--sombra-sutil);
+      display: none;
+    }
+
+    /* Cuadrícula Principal */
+    .grid-principal {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 900px) {
+      .grid-principal {
+        grid-template-columns: 440px 1fr;
+      }
+    }
+
+    /* Tarjetas principales con sombra suave y borde imperceptible */
+    .tarjeta {
+      background: var(--bg-tarjeta);
+      border: 1px solid var(--borde-sutil);
+      border-radius: var(--radio-borde);
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+      box-shadow: var(--sombra-suave);
+    }
+
+    .tarjeta-titulo {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--texto-principal);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--borde-sutil);
+      padding-bottom: 0.65rem;
+    }
+
+    /* Vista de Cámara Web */
+    .camara-contenedor {
+      background: #090a0d;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+      position: relative;
+      border: 1px solid var(--borde-sutil);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .camara-contenedor canvas {
+      width: 100% !important;
+      height: auto !important;
+      max-width: 400px;
+      display: block;
+      transform: scaleX(-1); /* Efecto espejo */
+    }
+
+    .camara-placeholder {
+      color: var(--texto-secundario);
+      text-align: center;
+      padding: 2.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Botones con sombras agradables */
+    .grupo-botones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 480px) {
+      .grupo-botones {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn {
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-primario {
+      background: var(--color-primario);
+      color: #ffffff;
+      box-shadow: var(--sombra-boton);
+    }
+
+    .btn-primario:hover:not(:disabled) {
+      background: var(--color-primario-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-serial {
+      background: var(--bg-interior);
+      border: 1px solid var(--borde-sutil);
+      color: var(--texto-principal);
+      box-shadow: var(--sombra-sutil);
+    }
+
+    .btn-serial:hover:not(:disabled) {
+      background: var(--bg-tarjeta-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-serial.conectado {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Controles deslizantes (Sliders) */
+    .grupo-control {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--texto-secundario);
+    }
+
+    .control-valor {
+      color: var(--color-acento);
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-interior);
+      border-radius: 999px;
+      accent-color: var(--color-primario);
+      cursor: pointer;
+      border: 1px solid var(--borde-sutil);
+    }
+
+    /* Gran Estado de la Barrera con sombra ambiental y sin bordes duros */
+    .banner-estado-barrera {
+      border-radius: var(--radio-borde);
+      padding: 1.6rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.35s ease;
+      border: 1px solid var(--borde-sutil);
+    }
+
+    .banner-estado-barrera.cerrada {
+      background: radial-gradient(circle at center, rgba(244, 63, 94, 0.15) 0%, rgba(24, 27, 34, 0.95) 75%);
+      box-shadow: 0 10px 30px -4px rgba(244, 63, 94, 0.14), var(--sombra-suave);
+    }
+
+    .banner-estado-barrera.abierta {
+      background: radial-gradient(circle at center, rgba(16, 185, 129, 0.15) 0%, rgba(24, 27, 34, 0.95) 75%);
+      box-shadow: 0 10px 30px -4px rgba(16, 185, 129, 0.14), var(--sombra-suave);
+    }
+
+    .indicador-luz {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin-bottom: 0.25rem;
+      transition: all 0.3s ease;
+    }
+
+    .indicador-luz.cerrada {
+      background-color: var(--color-cerrado);
+      box-shadow: 0 0 12px var(--color-cerrado);
+    }
+
+    .indicador-luz.abierta {
+      background-color: var(--color-abierto);
+      box-shadow: 0 0 12px var(--color-abierto);
+    }
+
+    .texto-barrera {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .banner-estado-barrera.cerrada .texto-barrera {
+      color: #fb7185;
+    }
+
+    .banner-estado-barrera.abierta .texto-barrera {
+      color: #34d399;
+    }
+
+    .detalle-barrera {
+      font-size: 0.9rem;
+      color: var(--texto-secundario);
+    }
+
+    /* Barra de Cuenta Regresiva (Antirrebote) */
+    .cuenta-regresiva-caja {
+      background: var(--bg-tarjeta);
+      border: 1px solid var(--borde-sutil);
+      border-radius: var(--radio-borde);
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      box-shadow: var(--sombra-sutil);
+    }
+
+    .cuenta-regresiva-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--texto-secundario);
+    }
+
+    .cuenta-regresiva-texto {
+      font-weight: 600;
+      color: var(--texto-principal);
+    }
+
+    .progreso-fondo {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-interior);
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 1px solid var(--borde-sutil);
+    }
+
+    .progreso-relleno {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--color-primario), var(--color-acento));
+      transition: width 0.1s linear;
+      border-radius: 9999px;
+    }
+
+    /* Lista de Clases y Probabilidades */
+    .lista-clases {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .fila-clase {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
+      background: var(--bg-interior);
+      border: 1px solid transparent;
+      transition: all 0.25s ease;
+    }
+
+    .fila-clase.destacada {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: rgba(99, 102, 241, 0.25);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+    }
+
+    .info-clase {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .nombre-clase {
+      font-weight: 600;
+      color: var(--texto-principal);
+    }
+
+    .porcentaje-clase {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--texto-secundario);
+    }
+
+    .fila-clase.destacada .porcentaje-clase {
+      color: var(--color-acento);
+    }
+
+    .barra-probabilidad-fondo {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .barra-probabilidad-fill {
+      height: 100%;
+      width: 0%;
+      background: #374151;
+      border-radius: 999px;
+      transition: width 0.15s ease-out;
+    }
+
+    .fila-clase.destacada .barra-probabilidad-fill {
+      background: linear-gradient(90deg, var(--color-primario), var(--color-acento));
+    }
+
+    /* Fila de Estado Serial */
+    .fila-serial-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      background: var(--bg-interior);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--borde-sutil);
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .envio-badge {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      background: var(--bg-tarjeta);
+      border: 1px solid var(--borde-sutil);
+      color: var(--texto-principal);
+      font-weight: 700;
+      font-family: monospace;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Registro de Eventos (Logs) */
+    .registro-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.25rem;
+    }
+
+    .btn-limpiar {
+      background: transparent;
+      border: 1px solid var(--borde-sutil);
+      color: var(--texto-secundario);
+      padding: 0.25rem 0.6rem;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-limpiar:hover {
+      background: var(--bg-interior);
+      color: var(--texto-principal);
+    }
+
+    .caja-logs {
+      background: var(--bg-interior);
+      border: 1px solid var(--borde-sutil);
+      border-radius: 8px;
+      padding: 0.85rem;
+      max-height: 180px;
+      overflow-y: auto;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 0.35rem;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .item-log {
+      display: flex;
+      gap: 0.5rem;
+      word-break: break-all;
+    }
+
+    .log-hora {
+      color: var(--texto-mutado);
+      flex-shrink: 0;
+    }
+
+    .log-msg {
+      color: #e5e7eb;
+    }
+
+    .log-info { color: #93c5fd; }
+    .log-success { color: #6ee7b7; }
+    .log-warning { color: #fde047; }
+    .log-error { color: #fca5a5; }
+
+    /* Campo de texto de URL de modelo */
+    .input-modelo {
+      width: 100%;
+      background: var(--bg-interior);
+      border: 1px solid var(--borde-sutil);
+      color: var(--texto-principal);
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+      transition: border-color 0.2s ease;
+    }
+
+    .input-modelo:focus {
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor-app">
+
+    <!-- Encabezado -->
+    <header>
+      <div>
+        <h1>Barrera Inteligente</h1>
+        <div class="subtitulo">Visión por Computadora con Teachable Machine y Control Serial de Servomotor</div>
+      </div>
+      <div class="badges-header">
+        <span id="badge-serial" class="badge offline">Arduino: Desconectado</span>
+        <span id="badge-camara" class="badge">Cámara: Inactiva</span>
+      </div>
+    </header>
+
+    <!-- Alerta cuando el navegador no soporta Web Serial -->
+    <div id="alerta-serial" class="alerta-incompatible">
+      <strong>Aviso:</strong> Para comunicarte con el Arduino UNO necesitas abrir esta página en <strong>Google Chrome</strong> o <strong>Microsoft Edge</strong> desde una computadora. La visión por computadora seguirá funcionando en modo simulación.
+    </div>
+
+    <!-- Cuadrícula Principal -->
+    <div class="grid-principal">
+
+      <!-- COLUMNA IZQUIERDA: Cámara, Acciones y Ajustes -->
+      <section class="tarjeta">
+        <div class="tarjeta-titulo">
+          <span>Vista de Cámara</span>
+          <span id="fps-counter" style="font-size: 0.75rem; color: var(--texto-secundario);">0 FPS</span>
+        </div>
+
+        <!-- Contenedor del Canvas de la Cámara -->
+        <div class="camara-contenedor" id="webcam-container">
+          <div class="camara-placeholder" id="placeholder-camara">
+            <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>
+            </svg>
+            <p>Presiona <strong>"Iniciar cámara y modelo"</strong> para activar la IA</p>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="grupo-botones">
+          <button id="btn-iniciar" class="btn btn-primario" onclick="iniciarSistema()">
+            Iniciar cámara y modelo
+          </button>
+          <button id="btn-conectar-serial" class="btn btn-serial" onclick="conectarArduino()">
+            Conectar Arduino
+          </button>
+        </div>
+
+        <!-- Configuración de Enlace del Modelo -->
+        <div class="grupo-control">
+          <label class="control-label" for="input-url-modelo">
+            <span>Enlace de Teachable Machine:</span>
+          </label>
+          <input type="text" id="input-url-modelo" class="input-modelo" value="" placeholder="https://teachablemachine.withgoogle.com/models/XXXX/">
+        </div>
+
+        <!-- Controles Deslizantes (Sliders) -->
+        <div class="tarjeta-titulo" style="margin-top: 0.5rem;">
+          <span>Parámetros de Decisión</span>
+        </div>
+
+        <!-- Slider 1: Umbral de Confianza -->
+        <div class="grupo-control">
+          <div class="control-label">
+            <span>Umbral de probabilidad mínima:</span>
+            <span id="valor-umbral" class="control-valor">90%</span>
+          </div>
+          <input type="range" id="slider-umbral" min="50" max="99" value="90" oninput="actualizarParametros()">
+        </div>
+
+        <!-- Slider 2: Tiempo continuo para Abrir -->
+        <div class="grupo-control">
+          <div class="control-label">
+            <span>Tiempo sostenido para ABRIR:</span>
+            <span id="valor-tiempo-abrir" class="control-valor">1.5 s</span>
+          </div>
+          <input type="range" id="slider-tiempo-abrir" min="0" max="5" step="0.1" value="1.5" oninput="actualizarParametros()">
+        </div>
+
+        <!-- Slider 3: Tiempo continuo para Cerrar -->
+        <div class="grupo-control">
+          <div class="control-label">
+            <span>Tiempo sostenido para CERRAR:</span>
+            <span id="valor-tiempo-cerrar" class="control-valor">3.0 s</span>
+          </div>
+          <input type="range" id="slider-tiempo-cerrar" min="0" max="10" step="0.1" value="3.0" oninput="actualizarParametros()">
+        </div>
+      </section>
+
+      <!-- COLUMNA DERECHA: Estado de Barrera, Predicciones y Comunicación -->
+      <section style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+        <!-- Gran Banner de Estado de la Barrera -->
+        <div id="banner-barrera" class="banner-estado-barrera cerrada">
+          <div id="indicador-luz" class="indicador-luz cerrada"></div>
+          <div id="texto-estado-barrera" class="texto-barrera">CERRADA</div>
+          <div id="detalle-barrera" class="detalle-barrera">Posición segura (Servomotor a 0°)</div>
+        </div>
+
+        <!-- Cuenta Regresiva y Antirrebote -->
+        <div class="cuenta-regresiva-caja">
+          <div class="cuenta-regresiva-header">
+            <span>Transición en progreso:</span>
+            <span id="texto-cuenta-regresiva" class="cuenta-regresiva-texto">En espera (Sin cambios)</span>
+          </div>
+          <div class="progreso-fondo">
+            <div id="barra-cuenta-regresiva" class="progreso-relleno"></div>
+          </div>
+        </div>
+
+        <!-- Monitoreo de Clases y Probabilidades -->
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">
+            <span>Clasificación en Tiempo Real</span>
+            <span id="clase-ganadora-tag" style="font-size: 0.8rem; color: var(--color-acento); font-weight: 600;">Esperando...</span>
+          </div>
+          <div id="contenedor-etiquetas" class="lista-clases">
+            <div style="color: var(--texto-secundario); font-size: 0.85rem; text-align: center; padding: 1rem;">
+              Las barras de probabilidad aparecerán aquí al iniciar el modelo.
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado de Comunicación Serial -->
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">
+            <span>Comunicación Serial (Web Serial API)</span>
+          </div>
+          <div class="fila-serial-info">
+            <div>
+              <span>Estado del puerto: </span>
+              <strong id="texto-puerto-serial" style="color: var(--texto-secundario);">Desconectado</strong>
+            </div>
+            <div>
+              <span>Último comando: </span>
+              <span id="ultimo-envio-char" class="envio-badge">Ninguno</span>
+            </div>
+            <div>
+              <span>Velocidad: </span>
+              <span class="envio-badge">9600 baud</span>
+            </div>
+          </div>
+
+          <!-- Registro de Eventos (Logs) -->
+          <div class="registro-header">
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--texto-secundario);">Registro de actividad:</span>
+            <button class="btn-limpiar" onclick="limpiarLogs()">Limpiar</button>
+          </div>
+          <div class="caja-logs" id="caja-logs">
+            <!-- Los eventos se inyectan dinámicamente -->
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- ==========================================================
+       LÓGICA JAVASCRIPT - ESTUDIANTIL, MODULAR Y COMENTADA
+       ========================================================== -->
+  <script>
+    /* ==========================================================
+       1. CONSTANTES CONFIGURABLES DEL SISTEMA
+       ========================================================== */
+    // Enlace exportado de Google Teachable Machine.
+    // Cambia este enlace por el de tu propio modelo si es necesario.
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/v8i9o3L0z/";
+
+    // Nombre de la clase que representa el estado de reposo (sin vehículos ni personas autorizadas)
+    const CLASE_VACIO = "Vacío";
+
+    // Letras enviadas por puerto serial al Arduino UNO
+    const LETRA_ABRIR = "A";   // Servomotor a 90°
+    const LETRA_CERRAR = "C";  // Servomotor a 0°
+
+    // Velocidad de comunicación serial recomendada para Arduino
+    const BAUD_RATE = 9600;
+
+    /* ==========================================================
+       2. VARIABLES GLOBALES DE ESTADO
+       ========================================================== */
+    let modelo = null;              // Instancia del modelo cargado con tfjs
+    let webcam = null;              // Instancia de la cámara de Teachable Machine
+    let etiquetasClases = [];       // Lista dinámica obtenida con model.getClassLabels()
+    let totalClases = 0;            // Cantidad de clases del modelo
+    let sistemaIniciado = false;    // Indica si el bucle de predicción está activo
+
+    // Estado físico de la barrera (Inicia cerrada por seguridad)
+    let barreraAbierta = false;
+    let claseQueAbrio = "";
+
+    // Variables de control de tiempo y antirrebote
+    let intencionActual = null;          // "ABRIR" o "CERRAR"
+    let claseCandidataActual = "";       // Clase que está empujando el cambio
+    let tiempoInicioIntencion = null;    // Marca de tiempo (ms) cuando comenzó la detección continua
+
+    // Variables de configuración dinámica (leídas desde los sliders)
+    let umbralProbabilidad = 0.90;       // 90% por defecto
+    let tiempoRequeridoAbrir = 1.5;      // 1.5 segundos
+    let tiempoRequeridoCerrar = 3.0;     // 3.0 segundos
+
+    // Variables de Web Serial API
+    let puertoSerial = null;
+    let escritorSerial = null;
+
+    // Cálculo de FPS
+    let ultimoTiempoFrame = performance.now();
+    let contadorFrames = 0;
+
+    /* ==========================================================
+       3. INICIALIZACIÓN DE LA INTERFAZ AL CARGAR LA PÁGINA
+       ========================================================== */
+    window.addEventListener("DOMContentLoaded", () => {
+      // Poner la URL configurada en el campo de texto
+      const inputUrl = document.getElementById("input-url-modelo");
+      if (inputUrl) inputUrl.value = MODEL_URL;
+
+      // Comprobar soporte de la Web Serial API
+      if (!("serial" in navigator)) {
+        const alerta = document.getElementById("alerta-serial");
+        if (alerta) alerta.style.display = "block";
+        agregarLog("Tu navegador NO soporta Web Serial API. Se usará modo simulación.", "warning");
+      } else {
+        agregarLog("Navegador compatible con Web Serial API detectado.", "info");
+
+        // Escuchar desconexión física del cable USB
+        navigator.serial.addEventListener("disconnect", (evento) => {
+          if (evento.target === puertoSerial) {
+            puertoSerial = null;
+            escritorSerial = null;
+            actualizarEstadoSerialUI(false, "Desconectado físicamente");
+            agregarLog("El cable de Arduino fue desconectado del puerto USB.", "warning");
+          }
+        });
+      }
+
+      // Sincronizar sliders
+      actualizarParametros();
+      agregarLog("Sistema listo. Presiona 'Iniciar cámara y modelo'.", "info");
+    });
+
+    /* ==========================================================
+       4. ACTUALIZACIÓN DE PARÁMETROS DESDE LOS SLIDERS
+       ========================================================== */
+    function actualizarParametros() {
+      const sliderU = document.getElementById("slider-umbral");
+      const sliderA = document.getElementById("slider-tiempo-abrir");
+      const sliderC = document.getElementById("slider-tiempo-cerrar");
+
+      umbralProbabilidad = parseFloat(sliderU.value) / 100;
+      tiempoRequeridoAbrir = parseFloat(sliderA.value);
+      tiempoRequeridoCerrar = parseFloat(sliderC.value);
+
+      document.getElementById("valor-umbral").textContent = `${sliderU.value}%`;
+      document.getElementById("valor-tiempo-abrir").textContent = `${tiempoRequeridoAbrir.toFixed(1)} s`;
+      document.getElementById("valor-tiempo-cerrar").textContent = `${tiempoRequeridoCerrar.toFixed(1)} s`;
+    }
+
+    /* ==========================================================
+       5. COMUNICACIÓN SERIAL CON ARDUINO (WEB SERIAL API)
+       ========================================================== */
+    async function conectarArduino() {
+      if (!("serial" in navigator)) {
+        alert("Web Serial no es compatible con este navegador.\nUsa Google Chrome o Microsoft Edge en tu computadora.");
+        return;
+      }
+
+      try {
+        agregarLog("Solicitando puerto serial al usuario...", "info");
+        // El navegador muestra una ventana emergente para elegir el puerto COM
+        puertoSerial = await navigator.serial.requestPort();
+
+        agregarLog(`Abriendo puerto a ${BAUD_RATE} baudios...`, "info");
+        await puertoSerial.open({ baudRate: BAUD_RATE });
+
+        // Obtenemos el writer para poder enviarle texto al Arduino
+        escritorSerial = puertoSerial.writable.getWriter();
+
+        actualizarEstadoSerialUI(true, "Conectado (esperando reinicio 2s...)");
+        agregarLog("Arduino conectado. Esperando 2 segundos mientras el microcontrolador se reinicia...", "info");
+
+        // Al abrir el puerto serial, Arduino UNO reinicia su procesador debido a la señal DTR.
+        // Es indispensable esperar aproximadamente 2 segundos antes de enviar datos.
+        setTimeout(async () => {
+          try {
+            await enviarCaracterSerial(LETRA_CERRAR);
+            actualizarEstadoSerialUI(true, "Conectado y Listo");
+            agregarLog(`Estado inicial seguro enviado al Arduino: '${LETRA_CERRAR}' (CERRAR)`, "success");
+          } catch (e) {
+            agregarLog(`Error al enviar estado inicial: ${e.message}`, "error");
+          }
+        }, 2000);
+
+      } catch (error) {
+        console.error("Error al conectar serial:", error);
+        if (error.name === "NotFoundError") {
+          agregarLog("No se seleccionó ningún dispositivo serial.", "warning");
+        } else {
+          // Típico error cuando el Monitor Serial de Arduino IDE tiene bloqueado el puerto
+          agregarLog(`Error al abrir puerto: ${error.message}. Si el Monitor Serial del Arduino IDE está abierto, ciérralo y vuelve a intentar.`, "error");
+        }
+        actualizarEstadoSerialUI(false, "Desconectado");
+      }
+    }
+
+    /**
+     * Envía un único carácter por puerto serial usando TextEncoder.
+     * Si no hay Arduino conectado, opera en modo simulación sin bloquear la página.
+     */
+    async function enviarCaracterSerial(caracter) {
+      document.getElementById("ultimo-envio-char").textContent = caracter;
+
+      if (!escritorSerial) {
+        // Modo simulación: Registra la acción sin fallar
+        agregarLog(`Simulación (Sin Arduino): Enviaría '${caracter}'`, "info");
+        return;
+      }
+
+      try {
+        const datosCodificados = new TextEncoder().encode(caracter);
+        await escritorSerial.write(datosCodificados);
+        agregarLog(`Comando serial enviado con éxito: '${caracter}'`, "success");
+      } catch (err) {
+        console.error("Error al escribir en serial:", err);
+        agregarLog(`Fallo al enviar comando '${caracter}': ${err.message}`, "error");
+      }
+    }
+
+    function actualizarEstadoSerialUI(conectado, textoEstado) {
+      const badge = document.getElementById("badge-serial");
+      const textoPuerto = document.getElementById("texto-puerto-serial");
+      const btnSerial = document.getElementById("btn-conectar-serial");
+
+      textoPuerto.textContent = textoEstado;
+
+      if (conectado) {
+        badge.className = "badge online";
+        badge.textContent = "Arduino: Conectado";
+        btnSerial.classList.add("conectado");
+        btnSerial.textContent = "Arduino Conectado";
+      } else {
+        badge.className = "badge offline";
+        badge.textContent = "Arduino: Desconectado";
+        btnSerial.classList.remove("conectado");
+        btnSerial.textContent = "Conectar Arduino";
+      }
+    }
+
+    /* ==========================================================
+       6. CARGA DEL MODELO Y ACTIVACIÓN DE LA CÁMARA WEB
+       ========================================================== */
+    async function iniciarSistema() {
+      const btnIniciar = document.getElementById("btn-iniciar");
+      const inputUrl = document.getElementById("input-url-modelo");
+      let urlBase = inputUrl.value.trim();
+
+      if (!urlBase) {
+        alert("Por favor ingresa una URL válida de Teachable Machine.");
+        return;
+      }
+
+      // Asegurar que la URL termine en '/'
+      if (!urlBase.endsWith("/")) {
+        urlBase += "/";
+      }
+
+      btnIniciar.disabled = true;
+      btnIniciar.textContent = "Cargando modelo...";
+      agregarLog(`Descargando modelo desde: ${urlBase}...`, "info");
+
+      try {
+        const modelURL = urlBase + "model.json";
+        const metadataURL = urlBase + "metadata.json";
+
+        // Cargar modelo y metadatos con la librería de Teachable Machine
+        modelo = await tmImage.load(modelURL, metadataURL);
+        totalClases = modelo.getTotalClasses();
+        etiquetasClases = modelo.getClassLabels();
+
+        agregarLog(`Modelo cargado exitosamente. Clases encontradas (${totalClases}): [${etiquetasClases.join(", ")}]`, "success");
+
+        // Configuración de la cámara web (400x300, con efecto espejo)
+        const flip = true;
+        webcam = new tmImage.Webcam(400, 300, flip);
+
+        agregarLog("Solicitando permisos de cámara web...", "info");
+        await webcam.setup(); // Solicita acceso al navegador
+        await webcam.play();
+
+        // Reemplazar el placeholder por el canvas real
+        const contenedorCamara = document.getElementById("webcam-container");
+        contenedorCamara.innerHTML = "";
+        contenedorCamara.appendChild(webcam.canvas);
+
+        // Construir dinámicamente las barras de progreso para cada clase
+        construirBarrasDeClases();
+
+        // Actualizar badges
+        const badgeCamara = document.getElementById("badge-camara");
+        badgeCamara.className = "badge online";
+        badgeCamara.textContent = "Cámara: Activa";
+
+        btnIniciar.textContent = "Cámara y Modelo Activos";
+        sistemaIniciado = true;
+
+        agregarLog("Detección en tiempo real iniciada.", "success");
+
+        // Iniciar el bucle de animación
+        window.requestAnimationFrame(buclePrincipal);
+
+      } catch (error) {
+        console.error("Error al iniciar modelo o cámara:", error);
+        btnIniciar.disabled = false;
+        btnIniciar.textContent = "Reintentar cámara y modelo";
+        agregarLog(`Error al iniciar: ${error.message}. Revisa la URL del modelo o permisos de la cámara.`, "error");
+        alert("No se pudo cargar el modelo o la cámara. Revisa la consola o el registro de eventos para más detalles.");
+      }
+    }
+
+    /**
+     * Construye las filas de progreso en el DOM según las clases del modelo cargado.
+     */
+    function construirBarrasDeClases() {
+      const contenedor = document.getElementById("contenedor-etiquetas");
+      contenedor.innerHTML = "";
+
+      for (let i = 0; i < totalClases; i++) {
+        const nombre = etiquetasClases[i];
+
+        const fila = document.createElement("div");
+        fila.className = "fila-clase";
+        fila.id = `fila-clase-${i}`;
+
+        fila.innerHTML = `
+          <div class="info-clase">
+            <span class="nombre-clase">${nombre}</span>
+            <span class="porcentaje-clase" id="porcentaje-${i}">0.0%</span>
+          </div>
+          <div class="barra-probabilidad-fondo">
+            <div class="barra-probabilidad-fill" id="barra-fill-${i}"></div>
+          </div>
+        `;
+
+        contenedor.appendChild(fila);
+      }
+    }
+
+    /* ==========================================================
+       7. BUCLE PRINCIPAL DE PREDICCIÓN Y LÓGICA DE DECISIÓN
+       ========================================================== */
+    async function buclePrincipal() {
+      if (!sistemaIniciado) return;
+
+      // Actualizar frame del video de la cámara
+      webcam.update();
+
+      // Realizar la clasificación sobre el canvas actual
+      await clasificarFrame();
+
+      // Cálculo de cuadros por segundo (FPS)
+      contadorFrames++;
+      const ahora = performance.now();
+      if (ahora - ultimoTiempoFrame >= 1000) {
+        document.getElementById("fps-counter").textContent = `${contadorFrames} FPS`;
+        contadorFrames = 0;
+        ultimoTiempoFrame = ahora;
+      }
+
+      // Siguiente cuadro
+      window.requestAnimationFrame(buclePrincipal);
+    }
+
+    /**
+     * Evalúa las probabilidades devueltas por el modelo y gestiona
+     * el antirrebote y cambio de estado de la barrera.
+     */
+    async function clasificarFrame() {
+      // model.predict devuelve un arreglo de objetos: [{ className, probability }, ...]
+      const predicciones = await modelo.predict(webcam.canvas);
+
+      let mayorProbabilidad = -1;
+      let claseGanadora = "";
+      let indiceGanador = -1;
+
+      // Actualizar visualmente cada barra y encontrar la clase dominante
+      for (let i = 0; i < totalClases; i++) {
+        const prob = predicciones[i].probability;
+        const porcentaje = (prob * 100).toFixed(1) + "%";
+
+        const elemPorcentaje = document.getElementById(`porcentaje-${i}`);
+        const elemBarra = document.getElementById(`barra-fill-${i}`);
+        const elemFila = document.getElementById(`fila-clase-${i}`);
+
+        if (elemPorcentaje) elemPorcentaje.textContent = porcentaje;
+        if (elemBarra) elemBarra.style.width = porcentaje;
+        if (elemFila) elemFila.classList.remove("destacada");
+
+        if (prob > mayorProbabilidad) {
+          mayorProbabilidad = prob;
+          claseGanadora = predicciones[i].className;
+          indiceGanador = i;
+        }
+      }
+
+      // Resaltar la clase ganadora en la interfaz
+      if (indiceGanador >= 0) {
+        const filaGanadora = document.getElementById(`fila-clase-${indiceGanador}`);
+        if (filaGanadora) filaGanadora.classList.add("destacada");
+        document.getElementById("clase-ganadora-tag").textContent = `${claseGanadora} (${(mayorProbabilidad * 100).toFixed(1)}%)`;
+      }
+
+      // LÓGICA DE DECISIÓN Y ANTIRREBOTE
+      procesarLogicaDecision(claseGanadora, mayorProbabilidad);
+    }
+
+    /**
+     * Aplica las reglas del proyecto:
+     * - Abrir: clase != CLASE_VACIO sostenida durante 'tiempoRequeridoAbrir'
+     * - Cerrar: clase == CLASE_VACIO sostenida durante 'tiempoRequeridoCerrar'
+     * - Enviar por serial ÚNICAMENTE cuando el estado cambia
+     */
+    function procesarLogicaDecision(claseDetectada, probabilidad) {
+      const ahora = performance.now();
+
+      // Regla: Si ninguna clase supera el umbral configurado, se reinicia la cuenta
+      // y se mantiene el estado actual intacto.
+      if (probabilidad < umbralProbabilidad) {
+        reiniciarContadorAntirrebote();
+        actualizarCuentaRegresivaUI("Sin acción (confianza menor al umbral)", 0);
+        return;
+      }
+
+      // CASO A: Se detecta una clase AUTORIZADA (Distinta de Vacío)
+      if (claseDetectada !== CLASE_VACIO) {
+
+        // Si la barrera ya está abierta, no hay nada que abrir
+        if (barreraAbierta) {
+          reiniciarContadorAntirrebote();
+          actualizarCuentaRegresivaUI(`Barrera ABIERTA (Autorizado: ${claseQueAbrio})`, 100);
+          return;
+        }
+
+        // Si la barrera está cerrada, queremos abrirla.
+        // Verificamos si cambió la clase candidata para reiniciar el temporizador antirrebote.
+        if (intencionActual !== "ABRIR" || claseCandidataActual !== claseDetectada) {
+          intencionActual = "ABRIR";
+          claseCandidataActual = claseDetectada;
+          tiempoInicioIntencion = ahora;
+        }
+
+        const tiempoTranscurrido = (ahora - tiempoInicioIntencion) / 1000;
+        const tiempoRestante = Math.max(0, tiempoRequeridoAbrir - tiempoTranscurrido);
+        const porcentajeProgreso = Math.min(100, (tiempoTranscurrido / (tiempoRequeridoAbrir || 0.001)) * 100);
+
+        actualizarCuentaRegresivaUI(`Abriendo en ${tiempoRestante.toFixed(1)} s (${claseDetectada})`, porcentajeProgreso);
+
+        // ¿Se cumplió el tiempo continuo requerido?
+        if (tiempoTranscurrido >= tiempoRequeridoAbrir) {
+          // Cambiar estado formalmente
+          barreraAbierta = true;
+          claseQueAbrio = claseDetectada;
+          reiniciarContadorAntirrebote();
+
+          // Reflejar en interfaz y enviar por serial
+          actualizarEstadoBarreraUI(true, claseQueAbrio);
+          enviarCaracterSerial(LETRA_ABRIR);
+          agregarLog(`BARRERA ABIERTA por detección sostenida de: '${claseQueAbrio}'`, "success");
+        }
+
+      }
+      // CASO B: Se detecta la clase de reposo (CLASE_VACIO)
+      else {
+
+        // Si la barrera ya está cerrada, se mantiene en reposo
+        if (!barreraAbierta) {
+          reiniciarContadorAntirrebote();
+          actualizarCuentaRegresivaUI("Barrera CERRADA (Reposo seguro)", 0);
+          return;
+        }
+
+        // Si la barrera está abierta, queremos cerrarla tras el tiempo de seguridad.
+        if (intencionActual !== "CERRAR" || claseCandidataActual !== CLASE_VACIO) {
+          intencionActual = "CERRAR";
+          claseCandidataActual = CLASE_VACIO;
+          tiempoInicioIntencion = ahora;
+        }
+
+        const tiempoTranscurrido = (ahora - tiempoInicioIntencion) / 1000;
+        const tiempoRestante = Math.max(0, tiempoRequeridoCerrar - tiempoTranscurrido);
+        const porcentajeProgreso = Math.min(100, (tiempoTranscurrido / (tiempoRequeridoCerrar || 0.001)) * 100);
+
+        actualizarCuentaRegresivaUI(`Cerrando en ${tiempoRestante.toFixed(1)} s (${CLASE_VACIO})`, porcentajeProgreso);
+
+        // ¿Se cumplió el tiempo continuo de reposo?
+        if (tiempoTranscurrido >= tiempoRequeridoCerrar) {
+          // Cambiar estado formalmente
+          barreraAbierta = false;
+          claseQueAbrio = "";
+          reiniciarContadorAntirrebote();
+
+          // Reflejar en interfaz y enviar por serial
+          actualizarEstadoBarreraUI(false, "");
+          enviarCaracterSerial(LETRA_CERRAR);
+          agregarLog(`BARRERA CERRADA tras reposo confirmado de '${CLASE_VACIO}'`, "warning");
+        }
+      }
+    }
+
+    function reiniciarContadorAntirrebote() {
+      intencionActual = null;
+      claseCandidataActual = "";
+      tiempoInicioIntencion = null;
+    }
+
+    /* ==========================================================
+       8. ACTUALIZACIÓN VISUAL DEL ESTADO DE LA BARRERA
+       ========================================================== */
+    function actualizarEstadoBarreraUI(abierta, claseOrigen) {
+      const banner = document.getElementById("banner-barrera");
+      const luz = document.getElementById("indicador-luz");
+      const texto = document.getElementById("texto-estado-barrera");
+      const detalle = document.getElementById("detalle-barrera");
+
+      if (abierta) {
+        banner.className = "banner-estado-barrera abierta";
+        if (luz) luz.className = "indicador-luz abierta";
+        texto.textContent = "ABIERTA";
+        detalle.textContent = `Acceso concedido por: ${claseOrigen} (Servomotor a 90°)`;
+      } else {
+        banner.className = "banner-estado-barrera cerrada";
+        if (luz) luz.className = "indicador-luz cerrada";
+        texto.textContent = "CERRADA";
+        detalle.textContent = "Posición de reposo seguro (Servomotor a 0°)";
+      }
+    }
+
+    function actualizarCuentaRegresivaUI(texto, porcentaje) {
+      const elemTexto = document.getElementById("texto-cuenta-regresiva");
+      const elemBarra = document.getElementById("barra-cuenta-regresiva");
+      if (elemTexto) elemTexto.textContent = texto;
+      if (elemBarra) elemBarra.style.width = `${porcentaje}%`;
+    }
+
+    /* ==========================================================
+       9. REGISTRO DE EVENTOS (LOGS EN PANTALLA)
+       ========================================================== */
+    function agregarLog(mensaje, tipo = "info") {
+      const caja = document.getElementById("caja-logs");
+      if (!caja) return;
+
+      const ahora = new Date();
+      const horaStr = ahora.toLocaleTimeString("es-MX", { hour12: false });
+
+      const item = document.createElement("div");
+      item.className = "item-log";
+
+      let claseColor = "log-info";
+      if (tipo === "success") claseColor = "log-success";
+      if (tipo === "warning") claseColor = "log-warning";
+      if (tipo === "error") claseColor = "log-error";
+
+      item.innerHTML = `
+        <span class="log-hora">[${horaStr}]</span>
+        <span class="log-msg ${claseColor}">${mensaje}</span>
+      `;
+
+      caja.appendChild(item);
+
+      // Limitar a los últimos 60 registros para evitar sobrecargar memoria
+      while (caja.children.length > 60) {
+        caja.removeChild(caja.firstChild);
+      }
+    }
+
+    function limpiarLogs() {
+      const caja = document.getElementById("caja-logs");
+      if (caja) caja.innerHTML = "";
+    }
+  </script>
+</body>
+</html>
+
