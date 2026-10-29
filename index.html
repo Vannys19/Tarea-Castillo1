@@ -20,26 +20,24 @@
        Bordes sutiles (sin líneas duras) y sombras suaves
        ========================================================== */
     :root {
-      /* Nueva paleta: Carbón profundo, Grafito suave e Índigo */
-      --bg-principal: #0f1115;       /* Fondo grafito muy oscuro */
-      --bg-tarjeta: #181b22;         /* Superficie de tarjeta limpia */
-      --bg-tarjeta-hover: #20242e;   /* Hover interactivo suave */
-      --bg-interior: #12141a;        /* Fondo para cajas internas e inputs */
-      --borde-sutil: rgba(255, 255, 255, 0.05); /* Borde difuminado, no marcado */
-      
-      --texto-principal: #f3f4f6;    /* Blanco suave de alto contraste */
-      --texto-secundario: #9ca3af;   /* Gris neutro legible */
-      --texto-mutado: #6b7280;       /* Texto atenuado */
+      --bg-principal: #0f1115;
+      --bg-tarjeta: #181b22;
+      --bg-tarjeta-hover: #20242e;
+      --bg-interior: #12141a;
+      --borde-sutil: rgba(255, 255, 255, 0.05);
 
-      --color-abierto: #10b981;      /* Esmeralda suave */
-      --color-cerrado: #f43f5e;      /* Rosa / Carmesí suave */
-      --color-primario: #6366f1;     /* Índigo moderno */
+      --texto-principal: #f3f4f6;
+      --texto-secundario: #9ca3af;
+      --texto-mutado: #6b7280;
+
+      --color-abierto: #10b981;
+      --color-cerrado: #f43f5e;
+      --color-primario: #6366f1;
       --color-primario-hover: #4f46e5;
-      --color-acento: #38bdf8;       /* Celeste cielo suave */
-      --color-alerta: #fbbf24;       /* Ámbar cálido */
+      --color-acento: #38bdf8;
+      --color-alerta: #fbbf24;
       --radio-borde: 14px;
 
-      /* Sombras suaves y difusas (no invasivas) */
       --sombra-suave: 0 8px 24px -4px rgba(0, 0, 0, 0.28);
       --sombra-sutil: 0 4px 14px rgba(0, 0, 0, 0.18);
       --sombra-boton: 0 2px 10px rgba(99, 102, 241, 0.22);
@@ -65,7 +63,6 @@
       min-height: 100vh;
     }
 
-    /* Enfoque visible accesible pero elegante */
     button:focus-visible, input:focus-visible {
       outline: 2px solid var(--color-primario);
       outline-offset: 2px;
@@ -79,7 +76,6 @@
       gap: 1.5rem;
     }
 
-    /* Encabezado */
     header {
       background: var(--bg-tarjeta);
       border: 1px solid var(--borde-sutil);
@@ -137,7 +133,6 @@
       border-color: rgba(244, 63, 94, 0.2);
     }
 
-    /* Alerta de compatibilidad Web Serial */
     .alerta-incompatible {
       background: rgba(244, 63, 94, 0.12);
       border: 1px solid rgba(244, 63, 94, 0.25);
@@ -149,7 +144,6 @@
       display: none;
     }
 
-    /* Cuadrícula Principal */
     .grid-principal {
       display: grid;
       grid-template-columns: 1fr;
@@ -162,7 +156,6 @@
       }
     }
 
-    /* Tarjetas principales con sombra suave y borde imperceptible */
     .tarjeta {
       background: var(--bg-tarjeta);
       border: 1px solid var(--borde-sutil);
@@ -185,7 +178,6 @@
       padding-bottom: 0.65rem;
     }
 
-    /* Vista de Cámara Web */
     .camara-contenedor {
       background: #090a0d;
       border-radius: 10px;
@@ -204,7 +196,7 @@
       height: auto !important;
       max-width: 400px;
       display: block;
-      transform: scaleX(-1); /* Efecto espejo */
+      transform: scaleX(-1);
     }
 
     .camara-placeholder {
@@ -217,7 +209,6 @@
       gap: 0.75rem;
     }
 
-    /* Botones con sombras agradables */
     .grupo-botones {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -281,7 +272,6 @@
       box-shadow: none !important;
     }
 
-    /* Controles deslizantes (Sliders) */
     .grupo-control {
       display: flex;
       flex-direction: column;
@@ -310,7 +300,6 @@
       border: 1px solid var(--borde-sutil);
     }
 
-    /* Gran Estado de la Barrera con sombra ambiental y sin bordes duros */
     .banner-estado-barrera {
       border-radius: var(--radio-borde);
       padding: 1.6rem 1.5rem;
@@ -371,7 +360,6 @@
       color: var(--texto-secundario);
     }
 
-    /* Barra de Cuenta Regresiva (Antirrebote) */
     .cuenta-regresiva-caja {
       background: var(--bg-tarjeta);
       border: 1px solid var(--borde-sutil);
@@ -412,7 +400,6 @@
       border-radius: 9999px;
     }
 
-    /* Lista de Clases y Probabilidades */
     .lista-clases {
       display: flex;
       flex-direction: column;
@@ -477,7 +464,6 @@
       background: linear-gradient(90deg, var(--color-primario), var(--color-acento));
     }
 
-    /* Fila de Estado Serial */
     .fila-serial-info {
       display: flex;
       align-items: center;
@@ -504,7 +490,6 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
-    /* Registro de Eventos (Logs) */
     .registro-header {
       display: flex;
       justify-content: space-between;
@@ -563,7 +548,6 @@
     .log-warning { color: #fde047; }
     .log-error { color: #fca5a5; }
 
-    /* Campo de texto de URL de modelo */
     .input-modelo {
       width: 100%;
       background: var(--bg-interior);
@@ -589,7 +573,7 @@
     <header>
       <div>
         <h1>Barrera Inteligente</h1>
-        <div class="subtitulo">Visión por Computadora con Teachable Machine y Control Serial de Servomotor</div>
+        <div class="subtitulo">Reconocimiento de rostros con Teachable Machine y control serial de servomotor</div>
       </div>
       <div class="badges-header">
         <span id="badge-serial" class="badge offline">Arduino: Desconectado</span>
@@ -612,7 +596,6 @@
           <span id="fps-counter" style="font-size: 0.75rem; color: var(--texto-secundario);">0 FPS</span>
         </div>
 
-        <!-- Contenedor del Canvas de la Cámara -->
         <div class="camara-contenedor" id="webcam-container">
           <div class="camara-placeholder" id="placeholder-camara">
             <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -622,7 +605,6 @@
           </div>
         </div>
 
-        <!-- Botones de Acción -->
         <div class="grupo-botones">
           <button id="btn-iniciar" class="btn btn-primario" onclick="iniciarSistema()">
             Iniciar cámara y modelo
@@ -632,7 +614,6 @@
           </button>
         </div>
 
-        <!-- Configuración de Enlace del Modelo -->
         <div class="grupo-control">
           <label class="control-label" for="input-url-modelo">
             <span>Enlace de Teachable Machine:</span>
@@ -640,12 +621,10 @@
           <input type="text" id="input-url-modelo" class="input-modelo" value="" placeholder="https://teachablemachine.withgoogle.com/models/XXXX/">
         </div>
 
-        <!-- Controles Deslizantes (Sliders) -->
         <div class="tarjeta-titulo" style="margin-top: 0.5rem;">
           <span>Parámetros de Decisión</span>
         </div>
 
-        <!-- Slider 1: Umbral de Confianza -->
         <div class="grupo-control">
           <div class="control-label">
             <span>Umbral de probabilidad mínima:</span>
@@ -654,7 +633,6 @@
           <input type="range" id="slider-umbral" min="50" max="99" value="90" oninput="actualizarParametros()">
         </div>
 
-        <!-- Slider 2: Tiempo continuo para Abrir -->
         <div class="grupo-control">
           <div class="control-label">
             <span>Tiempo sostenido para ABRIR:</span>
@@ -663,7 +641,6 @@
           <input type="range" id="slider-tiempo-abrir" min="0" max="5" step="0.1" value="1.5" oninput="actualizarParametros()">
         </div>
 
-        <!-- Slider 3: Tiempo continuo para Cerrar -->
         <div class="grupo-control">
           <div class="control-label">
             <span>Tiempo sostenido para CERRAR:</span>
@@ -673,17 +650,15 @@
         </div>
       </section>
 
-      <!-- COLUMNA DERECHA: Estado de Barrera, Predicciones y Comunicación -->
+      <!-- COLUMNA DERECHA -->
       <section style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-        <!-- Gran Banner de Estado de la Barrera -->
         <div id="banner-barrera" class="banner-estado-barrera cerrada">
           <div id="indicador-luz" class="indicador-luz cerrada"></div>
           <div id="texto-estado-barrera" class="texto-barrera">CERRADA</div>
           <div id="detalle-barrera" class="detalle-barrera">Posición segura (Servomotor a 0°)</div>
         </div>
 
-        <!-- Cuenta Regresiva y Antirrebote -->
         <div class="cuenta-regresiva-caja">
           <div class="cuenta-regresiva-header">
             <span>Transición en progreso:</span>
@@ -694,7 +669,6 @@
           </div>
         </div>
 
-        <!-- Monitoreo de Clases y Probabilidades -->
         <div class="tarjeta">
           <div class="tarjeta-titulo">
             <span>Clasificación en Tiempo Real</span>
@@ -707,7 +681,6 @@
           </div>
         </div>
 
-        <!-- Estado de Comunicación Serial -->
         <div class="tarjeta">
           <div class="tarjeta-titulo">
             <span>Comunicación Serial (Web Serial API)</span>
@@ -727,14 +700,11 @@
             </div>
           </div>
 
-          <!-- Registro de Eventos (Logs) -->
           <div class="registro-header">
             <span style="font-size: 0.85rem; font-weight: 600; color: var(--texto-secundario);">Registro de actividad:</span>
             <button class="btn-limpiar" onclick="limpiarLogs()">Limpiar</button>
           </div>
-          <div class="caja-logs" id="caja-logs">
-            <!-- Los eventos se inyectan dinámicamente -->
-          </div>
+          <div class="caja-logs" id="caja-logs"></div>
         </div>
 
       </section>
@@ -743,67 +713,67 @@
 
   </div>
 
-  <!-- ==========================================================
-       LÓGICA JAVASCRIPT - ESTUDIANTIL, MODULAR Y COMENTADA
-       ========================================================== -->
   <script>
     /* ==========================================================
        1. CONSTANTES CONFIGURABLES DEL SISTEMA
        ========================================================== */
     // Enlace exportado de Google Teachable Machine.
-    // Cambia este enlace por el de tu propio modelo si es necesario.
-    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/v8i9o3L0z/";
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/dP24w1JhN/";
 
-    // Nombre de la clase que representa el estado de reposo (sin vehículos ni personas autorizadas)
-    const CLASE_VACIO = "Vacío";
+    // Clases que significan "no hay nadie autorizado" (se ignoran mayúsculas y acentos).
+    // CUALQUIER OTRA clase del modelo se considera una persona autorizada y abre la barrera.
+    const CLASES_REPOSO = ["Vacío", "Vacio", "Ninguno", "Fondo", "Desconocido"];
 
     // Letras enviadas por puerto serial al Arduino UNO
     const LETRA_ABRIR = "A";   // Servomotor a 90°
     const LETRA_CERRAR = "C";  // Servomotor a 0°
 
-    // Velocidad de comunicación serial recomendada para Arduino
+    // Velocidad de comunicación serial
     const BAUD_RATE = 9600;
+
+    // Tiempo que tarda el Arduino en abrir o cerrar (90 pasos x 40 ms = 3.6 s) más margen.
+    // Durante este tiempo la página no toma decisiones nuevas, para no desfasarse del Arduino.
+    const TIEMPO_MOVIMIENTO_MS = 4500;
 
     /* ==========================================================
        2. VARIABLES GLOBALES DE ESTADO
        ========================================================== */
-    let modelo = null;              // Instancia del modelo cargado con tfjs
-    let webcam = null;              // Instancia de la cámara de Teachable Machine
-    let etiquetasClases = [];       // Lista dinámica obtenida con model.getClassLabels()
-    let totalClases = 0;            // Cantidad de clases del modelo
-    let sistemaIniciado = false;    // Indica si el bucle de predicción está activo
+    let modelo = null;
+    let webcam = null;
+    let etiquetasClases = [];
+    let totalClases = 0;
+    let sistemaIniciado = false;
 
-    // Estado físico de la barrera (Inicia cerrada por seguridad)
+    // Estado de la barrera (inicia cerrada por seguridad)
     let barreraAbierta = false;
     let claseQueAbrio = "";
 
-    // Variables de control de tiempo y antirrebote
-    let intencionActual = null;          // "ABRIR" o "CERRAR"
-    let claseCandidataActual = "";       // Clase que está empujando el cambio
-    let tiempoInicioIntencion = null;    // Marca de tiempo (ms) cuando comenzó la detección continua
+    // Control de tiempo y antirrebote
+    let intencionActual = null;
+    let claseCandidataActual = "";
+    let tiempoInicioIntencion = null;
+    let bloqueoHasta = 0;               // mientras dure, no se toman decisiones nuevas
 
-    // Variables de configuración dinámica (leídas desde los sliders)
-    let umbralProbabilidad = 0.90;       // 90% por defecto
-    let tiempoRequeridoAbrir = 1.5;      // 1.5 segundos
-    let tiempoRequeridoCerrar = 3.0;     // 3.0 segundos
+    // Parámetros leídos desde los sliders
+    let umbralProbabilidad = 0.90;
+    let tiempoRequeridoAbrir = 1.5;
+    let tiempoRequeridoCerrar = 3.0;
 
-    // Variables de Web Serial API
+    // Web Serial API
     let puertoSerial = null;
     let escritorSerial = null;
 
-    // Cálculo de FPS
+    // FPS
     let ultimoTiempoFrame = performance.now();
     let contadorFrames = 0;
 
     /* ==========================================================
-       3. INICIALIZACIÓN DE LA INTERFAZ AL CARGAR LA PÁGINA
+       3. INICIALIZACIÓN AL CARGAR LA PÁGINA
        ========================================================== */
     window.addEventListener("DOMContentLoaded", () => {
-      // Poner la URL configurada en el campo de texto
       const inputUrl = document.getElementById("input-url-modelo");
       if (inputUrl) inputUrl.value = MODEL_URL;
 
-      // Comprobar soporte de la Web Serial API
       if (!("serial" in navigator)) {
         const alerta = document.getElementById("alerta-serial");
         if (alerta) alerta.style.display = "block";
@@ -811,7 +781,6 @@
       } else {
         agregarLog("Navegador compatible con Web Serial API detectado.", "info");
 
-        // Escuchar desconexión física del cable USB
         navigator.serial.addEventListener("disconnect", (evento) => {
           if (evento.target === puertoSerial) {
             puertoSerial = null;
@@ -822,13 +791,12 @@
         });
       }
 
-      // Sincronizar sliders
       actualizarParametros();
       agregarLog("Sistema listo. Presiona 'Iniciar cámara y modelo'.", "info");
     });
 
     /* ==========================================================
-       4. ACTUALIZACIÓN DE PARÁMETROS DESDE LOS SLIDERS
+       4. PARÁMETROS DESDE LOS SLIDERS
        ========================================================== */
     function actualizarParametros() {
       const sliderU = document.getElementById("slider-umbral");
@@ -855,20 +823,17 @@
 
       try {
         agregarLog("Solicitando puerto serial al usuario...", "info");
-        // El navegador muestra una ventana emergente para elegir el puerto COM
         puertoSerial = await navigator.serial.requestPort();
 
         agregarLog(`Abriendo puerto a ${BAUD_RATE} baudios...`, "info");
         await puertoSerial.open({ baudRate: BAUD_RATE });
 
-        // Obtenemos el writer para poder enviarle texto al Arduino
         escritorSerial = puertoSerial.writable.getWriter();
 
         actualizarEstadoSerialUI(true, "Conectado (esperando reinicio 2s...)");
         agregarLog("Arduino conectado. Esperando 2 segundos mientras el microcontrolador se reinicia...", "info");
 
-        // Al abrir el puerto serial, Arduino UNO reinicia su procesador debido a la señal DTR.
-        // Es indispensable esperar aproximadamente 2 segundos antes de enviar datos.
+        // Al abrir el puerto, el Arduino UNO se reinicia. Hay que esperar ~2 s antes de enviar datos.
         setTimeout(async () => {
           try {
             await enviarCaracterSerial(LETRA_CERRAR);
@@ -884,22 +849,16 @@
         if (error.name === "NotFoundError") {
           agregarLog("No se seleccionó ningún dispositivo serial.", "warning");
         } else {
-          // Típico error cuando el Monitor Serial de Arduino IDE tiene bloqueado el puerto
           agregarLog(`Error al abrir puerto: ${error.message}. Si el Monitor Serial del Arduino IDE está abierto, ciérralo y vuelve a intentar.`, "error");
         }
         actualizarEstadoSerialUI(false, "Desconectado");
       }
     }
 
-    /**
-     * Envía un único carácter por puerto serial usando TextEncoder.
-     * Si no hay Arduino conectado, opera en modo simulación sin bloquear la página.
-     */
     async function enviarCaracterSerial(caracter) {
       document.getElementById("ultimo-envio-char").textContent = caracter;
 
       if (!escritorSerial) {
-        // Modo simulación: Registra la acción sin fallar
         agregarLog(`Simulación (Sin Arduino): Enviaría '${caracter}'`, "info");
         return;
       }
@@ -947,7 +906,6 @@
         return;
       }
 
-      // Asegurar que la URL termine en '/'
       if (!urlBase.endsWith("/")) {
         urlBase += "/";
       }
@@ -960,30 +918,31 @@
         const modelURL = urlBase + "model.json";
         const metadataURL = urlBase + "metadata.json";
 
-        // Cargar modelo y metadatos con la librería de Teachable Machine
         modelo = await tmImage.load(modelURL, metadataURL);
         totalClases = modelo.getTotalClasses();
         etiquetasClases = modelo.getClassLabels();
 
         agregarLog(`Modelo cargado exitosamente. Clases encontradas (${totalClases}): [${etiquetasClases.join(", ")}]`, "success");
 
-        // Configuración de la cámara web (400x300, con efecto espejo)
+        // Aviso si ninguna clase del modelo coincide con la lista de reposo
+        const hayReposo = etiquetasClases.some(c => esReposo(c));
+        if (!hayReposo) {
+          agregarLog(`ATENCIÓN: ninguna clase del modelo está en CLASES_REPOSO. La barrera nunca se cerrará. Agrega el nombre de tu clase "vacío" a esa lista.`, "warning");
+        }
+
         const flip = true;
         webcam = new tmImage.Webcam(400, 300, flip);
 
         agregarLog("Solicitando permisos de cámara web...", "info");
-        await webcam.setup(); // Solicita acceso al navegador
+        await webcam.setup();
         await webcam.play();
 
-        // Reemplazar el placeholder por el canvas real
         const contenedorCamara = document.getElementById("webcam-container");
         contenedorCamara.innerHTML = "";
         contenedorCamara.appendChild(webcam.canvas);
 
-        // Construir dinámicamente las barras de progreso para cada clase
         construirBarrasDeClases();
 
-        // Actualizar badges
         const badgeCamara = document.getElementById("badge-camara");
         badgeCamara.className = "badge online";
         badgeCamara.textContent = "Cámara: Activa";
@@ -993,7 +952,6 @@
 
         agregarLog("Detección en tiempo real iniciada.", "success");
 
-        // Iniciar el bucle de animación
         window.requestAnimationFrame(buclePrincipal);
 
       } catch (error) {
@@ -1005,9 +963,6 @@
       }
     }
 
-    /**
-     * Construye las filas de progreso en el DOM según las clases del modelo cargado.
-     */
     function construirBarrasDeClases() {
       const contenedor = document.getElementById("contenedor-etiquetas");
       contenedor.innerHTML = "";
@@ -1039,13 +994,9 @@
     async function buclePrincipal() {
       if (!sistemaIniciado) return;
 
-      // Actualizar frame del video de la cámara
       webcam.update();
-
-      // Realizar la clasificación sobre el canvas actual
       await clasificarFrame();
 
-      // Cálculo de cuadros por segundo (FPS)
       contadorFrames++;
       const ahora = performance.now();
       if (ahora - ultimoTiempoFrame >= 1000) {
@@ -1054,23 +1005,16 @@
         ultimoTiempoFrame = ahora;
       }
 
-      // Siguiente cuadro
       window.requestAnimationFrame(buclePrincipal);
     }
 
-    /**
-     * Evalúa las probabilidades devueltas por el modelo y gestiona
-     * el antirrebote y cambio de estado de la barrera.
-     */
     async function clasificarFrame() {
-      // model.predict devuelve un arreglo de objetos: [{ className, probability }, ...]
       const predicciones = await modelo.predict(webcam.canvas);
 
       let mayorProbabilidad = -1;
       let claseGanadora = "";
       let indiceGanador = -1;
 
-      // Actualizar visualmente cada barra y encontrar la clase dominante
       for (let i = 0; i < totalClases; i++) {
         const prob = predicciones[i].probability;
         const porcentaje = (prob * 100).toFixed(1) + "%";
@@ -1090,106 +1034,115 @@
         }
       }
 
-      // Resaltar la clase ganadora en la interfaz
       if (indiceGanador >= 0) {
         const filaGanadora = document.getElementById(`fila-clase-${indiceGanador}`);
         if (filaGanadora) filaGanadora.classList.add("destacada");
         document.getElementById("clase-ganadora-tag").textContent = `${claseGanadora} (${(mayorProbabilidad * 100).toFixed(1)}%)`;
       }
 
-      // LÓGICA DE DECISIÓN Y ANTIRREBOTE
       procesarLogicaDecision(claseGanadora, mayorProbabilidad);
     }
 
+    /* ----------------------------------------------------------
+       Ayudas para comparar nombres de clases sin importar
+       mayúsculas, minúsculas ni acentos
+       ---------------------------------------------------------- */
+    function normalizar(texto) {
+      return texto.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    const REPOSO_NORMALIZADO = CLASES_REPOSO.map(normalizar);
+
+    function esReposo(clase) {
+      return REPOSO_NORMALIZADO.includes(normalizar(clase));
+    }
+
     /**
-     * Aplica las reglas del proyecto:
-     * - Abrir: clase != CLASE_VACIO sostenida durante 'tiempoRequeridoAbrir'
-     * - Cerrar: clase == CLASE_VACIO sostenida durante 'tiempoRequeridoCerrar'
-     * - Enviar por serial ÚNICAMENTE cuando el estado cambia
+     * Reglas del proyecto (el ciclo se repite indefinidamente):
+     * - ABRIR: una persona del modelo (clase que NO es de reposo) sostenida 'tiempoRequeridoAbrir' s.
+     * - CERRAR: clase de reposo sostenida 'tiempoRequeridoCerrar' s con la barrera abierta.
+     * - Tras cada orden se bloquean las decisiones mientras el Arduino mueve el servo.
+     * - Se envía por serial ÚNICAMENTE cuando el estado cambia.
      */
     function procesarLogicaDecision(claseDetectada, probabilidad) {
       const ahora = performance.now();
 
-      // Regla: Si ninguna clase supera el umbral configurado, se reinicia la cuenta
-      // y se mantiene el estado actual intacto.
+      // La barrera se está moviendo: no se decide nada hasta que termine
+      if (ahora < bloqueoHasta) {
+        reiniciarContadorAntirrebote();
+        const seg = ((bloqueoHasta - ahora) / 1000).toFixed(1);
+        actualizarCuentaRegresivaUI(`Barrera en movimiento (${seg} s)`, 100);
+        return;
+      }
+
+      // Si la confianza es baja, se reinicia la cuenta y no cambia nada
       if (probabilidad < umbralProbabilidad) {
         reiniciarContadorAntirrebote();
         actualizarCuentaRegresivaUI("Sin acción (confianza menor al umbral)", 0);
         return;
       }
 
-      // CASO A: Se detecta una clase AUTORIZADA (Distinta de Vacío)
-      if (claseDetectada !== CLASE_VACIO) {
+      // CASO A: hay una persona autorizada frente a la cámara
+      if (!esReposo(claseDetectada)) {
 
-        // Si la barrera ya está abierta, no hay nada que abrir
         if (barreraAbierta) {
           reiniciarContadorAntirrebote();
           actualizarCuentaRegresivaUI(`Barrera ABIERTA (Autorizado: ${claseQueAbrio})`, 100);
           return;
         }
 
-        // Si la barrera está cerrada, queremos abrirla.
-        // Verificamos si cambió la clase candidata para reiniciar el temporizador antirrebote.
         if (intencionActual !== "ABRIR" || claseCandidataActual !== claseDetectada) {
           intencionActual = "ABRIR";
           claseCandidataActual = claseDetectada;
           tiempoInicioIntencion = ahora;
         }
 
-        const tiempoTranscurrido = (ahora - tiempoInicioIntencion) / 1000;
-        const tiempoRestante = Math.max(0, tiempoRequeridoAbrir - tiempoTranscurrido);
-        const porcentajeProgreso = Math.min(100, (tiempoTranscurrido / (tiempoRequeridoAbrir || 0.001)) * 100);
+        const transcurrido = (ahora - tiempoInicioIntencion) / 1000;
+        const restante = Math.max(0, tiempoRequeridoAbrir - transcurrido);
+        const progreso = Math.min(100, (transcurrido / (tiempoRequeridoAbrir || 0.001)) * 100);
+        actualizarCuentaRegresivaUI(`Abriendo en ${restante.toFixed(1)} s (${claseDetectada})`, progreso);
 
-        actualizarCuentaRegresivaUI(`Abriendo en ${tiempoRestante.toFixed(1)} s (${claseDetectada})`, porcentajeProgreso);
-
-        // ¿Se cumplió el tiempo continuo requerido?
-        if (tiempoTranscurrido >= tiempoRequeridoAbrir) {
-          // Cambiar estado formalmente
+        if (transcurrido >= tiempoRequeridoAbrir) {
           barreraAbierta = true;
           claseQueAbrio = claseDetectada;
+          bloqueoHasta = ahora + TIEMPO_MOVIMIENTO_MS;
           reiniciarContadorAntirrebote();
 
-          // Reflejar en interfaz y enviar por serial
           actualizarEstadoBarreraUI(true, claseQueAbrio);
           enviarCaracterSerial(LETRA_ABRIR);
-          agregarLog(`BARRERA ABIERTA por detección sostenida de: '${claseQueAbrio}'`, "success");
+          agregarLog(`BARRERA ABIERTA por: '${claseQueAbrio}'`, "success");
         }
-
       }
-      // CASO B: Se detecta la clase de reposo (CLASE_VACIO)
+
+      // CASO B: no hay nadie (clase de reposo)
       else {
 
-        // Si la barrera ya está cerrada, se mantiene en reposo
         if (!barreraAbierta) {
           reiniciarContadorAntirrebote();
-          actualizarCuentaRegresivaUI("Barrera CERRADA (Reposo seguro)", 0);
+          actualizarCuentaRegresivaUI("Barrera CERRADA (esperando a alguien)", 0);
           return;
         }
 
-        // Si la barrera está abierta, queremos cerrarla tras el tiempo de seguridad.
-        if (intencionActual !== "CERRAR" || claseCandidataActual !== CLASE_VACIO) {
+        if (intencionActual !== "CERRAR") {
           intencionActual = "CERRAR";
-          claseCandidataActual = CLASE_VACIO;
+          claseCandidataActual = "REPOSO";
           tiempoInicioIntencion = ahora;
         }
 
-        const tiempoTranscurrido = (ahora - tiempoInicioIntencion) / 1000;
-        const tiempoRestante = Math.max(0, tiempoRequeridoCerrar - tiempoTranscurrido);
-        const porcentajeProgreso = Math.min(100, (tiempoTranscurrido / (tiempoRequeridoCerrar || 0.001)) * 100);
+        const transcurrido = (ahora - tiempoInicioIntencion) / 1000;
+        const restante = Math.max(0, tiempoRequeridoCerrar - transcurrido);
+        const progreso = Math.min(100, (transcurrido / (tiempoRequeridoCerrar || 0.001)) * 100);
+        actualizarCuentaRegresivaUI(`Cerrando en ${restante.toFixed(1)} s (vacío)`, progreso);
 
-        actualizarCuentaRegresivaUI(`Cerrando en ${tiempoRestante.toFixed(1)} s (${CLASE_VACIO})`, porcentajeProgreso);
-
-        // ¿Se cumplió el tiempo continuo de reposo?
-        if (tiempoTranscurrido >= tiempoRequeridoCerrar) {
-          // Cambiar estado formalmente
+        if (transcurrido >= tiempoRequeridoCerrar) {
           barreraAbierta = false;
           claseQueAbrio = "";
+          bloqueoHasta = ahora + TIEMPO_MOVIMIENTO_MS;
           reiniciarContadorAntirrebote();
 
-          // Reflejar en interfaz y enviar por serial
           actualizarEstadoBarreraUI(false, "");
           enviarCaracterSerial(LETRA_CERRAR);
-          agregarLog(`BARRERA CERRADA tras reposo confirmado de '${CLASE_VACIO}'`, "warning");
+          agregarLog("BARRERA CERRADA: ya no hay nadie", "warning");
         }
       }
     }
@@ -1213,7 +1166,7 @@
         banner.className = "banner-estado-barrera abierta";
         if (luz) luz.className = "indicador-luz abierta";
         texto.textContent = "ABIERTA";
-        detalle.textContent = `Acceso concedido por: ${claseOrigen} (Servomotor a 90°)`;
+        detalle.textContent = `Acceso concedido a: ${claseOrigen} (Servomotor a 90°)`;
       } else {
         banner.className = "banner-estado-barrera cerrada";
         if (luz) luz.className = "indicador-luz cerrada";
@@ -1254,7 +1207,6 @@
 
       caja.appendChild(item);
 
-      // Limitar a los últimos 60 registros para evitar sobrecargar memoria
       while (caja.children.length > 60) {
         caja.removeChild(caja.firstChild);
       }
@@ -1267,4 +1219,3 @@
   </script>
 </body>
 </html>
-
